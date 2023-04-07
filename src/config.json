@@ -1,0 +1,15 @@
+{
+  "CHATGPT_KEY": "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",
+  "UPLOAD_FOLDER": "../upload",
+  "MSG": {
+    "-1" : "Message is null!",
+    "200": "Request successful!",
+    "400": "Bad Request！",
+    "401": "No file selected for uploading!",
+    "402": "Not a valid file type. Only PDF, doc, docx files are allowed.",
+    "403": "Please don't upload files larger than 5M!",
+    "500": "Server error occurred while uploading the file!"
+  },
+  "PORT": 8888,
+  "HOST": "0.0.0.0"
+}
