@@ -65,8 +65,8 @@ def clean_text(raw_text):
 def parser_resumes(file_manifest, project_folder, top_p, temperature, chatbot, history, systemPromptTxt):
     import time, os, fitz
     print('begin analysis on:', file_manifest)
-    for index, fp in enumerate(file_manifest):
-        with fitz.open(fp) as doc:
+    for index, file_path in enumerate(file_manifest):
+        with fitz.open(file_path) as doc:
             file_content = ""
             for page in doc:
                 file_content += page.get_text()
@@ -74,8 +74,12 @@ def parser_resumes(file_manifest, project_folder, top_p, temperature, chatbot, h
             print(file_content)
 
         prefix = "接下来请你逐个文件分析下面的简历内容" if index == 0 else ""
-        i_say = prefix + f'请对下面的简历内容请按照要求概括其内容以Markdown表格的方式返回（必须包含面试者的名字、年龄/生日/出生年月、学历/教育经历/教育背景、工作所在的公司、期望城市、目标岗位）其他无关的内容无需返回，没有匹配到的值返回：无，文件名是{os.path.relpath(fp, project_folder)}，简历内容是 ```{file_content}```'
-        i_say_show_user = prefix + f'[{index}/{len(file_manifest)}] 请对下面的简历内容做一个概述: {os.path.abspath(fp)}'
+        # i_say = prefix + f'请对下面的简历内容进行解析并按照要求返回中文内容（必须包含面试者的名字、年龄、教育经历、' \
+        #                  f'工作过的公司、期望城市、目标岗位）其他无关的内容无需返回，文件名是{os.path.relpath(file_path, project_folder)}，简历内容是 ```{file_content}```'
+        i_say = prefix + f"Please analyze the content of the resume below and return the content in Chinese as required (must include the interviewee's name, age, " \
+                         f"education experience, company worked, expected city, target position) other irrelevant content does not need to be returned，" \
+                         f"the file name is{os.path.relpath(file_path, project_folder)}，resume content is```{file_content}```"
+        i_say_show_user = prefix + f'[{index}/{len(file_manifest)}] 请对下面的简历内容做一个概述: {os.path.abspath(file_path)}'
         chatbot.append((i_say_show_user, "[Local Message] waiting gpt response."))
         print('[1] yield chatbot, history')
         yield chatbot, history, '正常'
@@ -88,7 +92,7 @@ def parser_resumes(file_manifest, project_folder, top_p, temperature, chatbot, h
 
             print('[2] end gpt req')
             chatbot[-1] = (i_say_show_user, gpt_say)
-            history.append(i_say_show_user);
+            history.append(i_say_show_user)
             history.append(gpt_say)
             print('[3] yield chatbot, history')
             yield chatbot, history, msg
@@ -107,7 +111,7 @@ def parser_resumes(file_manifest, project_folder, top_p, temperature, chatbot, h
                                                              history=history)  # 带超时倒计时
 
         chatbot[-1] = (i_say, gpt_say)
-        history.append(i_say);
+        history.append(i_say)
         history.append(gpt_say)
         yield chatbot, history, msg
         res = write_results_to_file(history)
