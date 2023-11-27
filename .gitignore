@@ -1,0 +1,6 @@
+/logs/*
+/private_upload/*
+/analysis_reports/*
+/.idea/*
+/flagged/log.csv
+/testing/logs/run.log
